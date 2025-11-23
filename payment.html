@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="payment-container" id="paymentPage">
+
+    <h2>Choose Payment Method</h2>
+
+    <!-- Order Summary -->
+    <div class="section order-box" id="orderSummary"></div>
+
+    <!-- Payment Options -->
+    <div class="section">
+        <h3>Select Method:</h3>
+        <input type="radio" name="pay" value="cod" checked> Cash on Delivery <br><br>
+        <input type="radio" name="pay" value="upi"> UPI Payment (Dummy) <br><br>
+        <input type="radio" name="pay" value="card"> Card Payment (Dummy) <br><br>
+    </div>
+
+    <!-- Payment Inputs (shown only for UPI/Card) -->
+    <div id="paymentInputs"></div>
+
+    <button class="btn" onclick="placeOrder()">Place Order</button>
+</div>
+
+<!-- Order Success Page -->
+<div id="successPage" style="display:none;">
+    <div class="success-box">
+        <h1>🎉 Order Placed Successfully!</h1>
+        <p>Your items will be delivered soon.</p>
+        <button class="btn" onclick="window.location.href='index.html'">Go to Home</button>
+    </div>
+</div>
+
+<script src="payment.js"></script>
+
+</body>
+</html>

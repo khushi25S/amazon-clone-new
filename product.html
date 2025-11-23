@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .product-page { max-width:800px; margin:40px auto; background:white; padding:20px; border-radius:6px;}
+        .product-actions { margin-top:20px; }
+        button { padding:8px 12px; margin-right:8px; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <div class="product-page">
+        <h1 id="pTitle">Product</h1>
+        <p id="pPrice">$0.00</p>
+        <p id="pDesc">This is a placeholder description for the product. Add details.</p>
+
+        <div class="product-actions">
+            <button id="pAddCart">Add to Cart</button>
+            <button id="pWishlist">Add to Wishlist</button>
+            <button id="pBack">Back</button>
+        </div>
+    </div>
+
+    <script>
+        // read query param
+        function qs(name) {
+            name = name.replace(/[\[\]]/g, "\\$&");
+            const url = window.location.search;
+            const results = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)").exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        const data = qs("data");
+        const obj = data ? JSON.parse(decodeURIComponent(data)) : { title: "Unknown", price: "0.00" };
+
+        document.getElementById("pTitle").innerText = obj.title;
+        document.getElementById("pPrice").innerText = `$${parseFloat(obj.price).toFixed(2)}`;
+
+        document.getElementById("pAddCart").addEventListener("click", () => {
+            const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+            const found = cart.find(i => i.item === obj.title);
+            if (found) found.quantity++;
+            else cart.push({ item: obj.title, price: parseFloat(obj.price), quantity: 1 });
+            localStorage.setItem("cartItems", JSON.stringify(cart));
+            alert(`${obj.title} added to cart`);
+        });
+
+        document.getElementById("pWishlist").addEventListener("click", () => {
+            const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+            if (wishlist.find(w => w.item === obj.title)) {
+                alert("Already in wishlist");
+            } else {
+                wishlist.push({ item: obj.title, price: parseFloat(obj.price) });
+                localStorage.setItem("wishlist", JSON.stringify(wishlist));
+                alert("Added to wishlist");
+            }
+        });
+
+        document.getElementById("pBack").addEventListener("click", () => {
+            window.history.back();
+        });
+    </script>
+</body>
+</html>

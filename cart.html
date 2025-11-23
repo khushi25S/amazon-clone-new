@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .cart-page {
+            width: 60%;
+            margin: auto;
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+        }
+        .cart-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="cart-page">
+    <h1>Your Shopping Cart</h1>
+    <div id="cartList"></div>
+</div>
+
+<script>
+    let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+
+    function renderCart() {
+        const div = document.getElementById("cartList");
+
+        if (cartItems.length === 0) {
+            div.innerHTML = "<h3>Your cart is empty!</h3>";
+            return;
+        }
+
+        let html = "";
+
+        cartItems.forEach((item, index) => {
+            html += `
+                <div class="cart-item">
+                    <h3>${item.item}</h3>
+                    <p>Price: $${item.price.toFixed(2)}</p>
+                    <p>Quantity: ${item.quantity}</p>
+                    <button onclick="increase(${index})">+</button>
+                    <button onclick="decrease(${index})">-</button>
+                    <button onclick="removeItem(${index})">Remove</button>
+                </div>
+            `;
+        });
+
+        div.innerHTML = html;
+    }
+
+    function save() {
+        localStorage.setItem("cartItems", JSON.stringify(cartItems));
+        renderCart();
+    }
+
+    function increase(i) {
+        cartItems[i].quantity++;
+        save();
+    }
+
+    function decrease(i) {
+        if (cartItems[i].quantity > 1) {
+            cartItems[i].quantity--;
+        }
+        save();
+    }
+
+    function removeItem(i) {
+        cartItems.splice(i, 1);
+        save();
+    }
+
+    renderCart();
+</script>
+
+</body>
+</html>

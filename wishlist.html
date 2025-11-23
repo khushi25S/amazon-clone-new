@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Wishlist</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .wish-wrap { max-width:1000px; margin:30px auto; background: white; padding:20px; border-radius:6px; }
+        .wish-item { display:flex; justify-content:space-between; align-items:center; padding:12px 8px; border-bottom:1px solid #eee; }
+        .wish-left { display:flex; align-items:center; gap:12px; }
+        .wish-actions button { margin-left:8px; padding:6px 10px; cursor:pointer; }
+        .empty-msg { text-align:center; padding:40px 0; color:#666; }
+        @media (max-width:600px) {
+            .wish-left { flex-direction: column; align-items:flex-start; gap:6px; }
+            .wish-item { flex-direction:column; align-items:flex-start; gap:8px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <!-- reuse your header from index (light) - optionally you can copy the same header block -->
+    </header>
+
+    <div class="wish-wrap">
+        <h1>Your Wishlist</h1>
+        <div id="wishListArea"></div>
+        <div style="margin-top:16px;">
+            <button id="continueShopping">Continue Shopping</button>
+            <button id="clearWishlist">Clear Wishlist</button>
+        </div>
+    </div>
+
+    <script>
+        // Render wishlist from localStorage
+        function renderWishlist() {
+            const list = JSON.parse(localStorage.getItem("wishlist")) || [];
+            const container = document.getElementById("wishListArea");
+            if (!list || list.length === 0) {
+                container.innerHTML = `<div class="empty-msg"><h3>Your wishlist is empty</h3><p>Add items from the homepage to save them here.</p></div>`;
+                return;
+            }
+            let html = "";
+            list.forEach((w, idx) => {
+                html += `
+                    <div class="wish-item" data-idx="${idx}">
+                        <div class="wish-left">
+                            <div style="width:80px;height:80px;background:#f4f4f4;border-radius:6px;display:flex;align-items:center;justify-content:center;">IMG</div>
+                            <div>
+                                <h3 style="margin:0">${w.item}</h3>
+                                <p style="margin:4px 0;color:#007185">$${parseFloat(w.price).toFixed(2)}</p>
+                            </div>
+                        </div>
+                        <div class="wish-actions">
+                            <button class="addToCartBtn" data-idx="${idx}">Add to Cart</button>
+                            <button class="removeWishBtn" data-idx="${idx}">Remove</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+
+            // wire buttons
+            document.querySelectorAll(".addToCartBtn").forEach(b => {
+                b.addEventListener("click", (e) => {
+                    const i = parseInt(e.target.dataset.idx);
+                    const itemObj = list[i];
+                    const cart = JSON.parse(localStorage.getItem("cartItems")) || [];
+                    const found = cart.find(ci => ci.item === itemObj.item);
+                    if (found) found.quantity++;
+                    else cart.push({ item: itemObj.item, price: parseFloat(itemObj.price), quantity: 1 });
+                    localStorage.setItem("cartItems", JSON.stringify(cart));
+                    alert(`${itemObj.item} added to cart`);
+                });
+            });
+
+            document.querySelectorAll(".removeWishBtn").forEach(b => {
+                b.addEventListener("click", (e) => {
+                    const i = parseInt(e.target.dataset.idx);
+                    list.splice(i, 1);
+                    localStorage.setItem("wishlist", JSON.stringify(list));
+                    renderWishlist();
+                });
+            });
+        }
+
+        document.getElementById("continueShopping").addEventListener("click", () => {
+            window.location.href = "index.html";
+        });
+
+        document.getElementById("clearWishlist").addEventListener("click", () => {
+            if (confirm("Clear all items from wishlist?")) {
+                localStorage.setItem("wishlist", JSON.stringify([]));
+                renderWishlist();
+            }
+        });
+
+        // initialize
+        renderWishlist();
+    </script>
+</body>
+</html>
